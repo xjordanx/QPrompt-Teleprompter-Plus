@@ -1,6 +1,6 @@
 # Intelliprompter (QPrompt fork): project brief for Claude Code
 
-> **Status (2026-11-06):** Decision made: **fork QPrompt** (C++/QML, Qt 6 + KDE Kirigami, GPL-3) and add a live **talking-point checklist** to it. This folder is a git checkout of upstream QPrompt with our work on branch `intelliprompter`. **Waiting on the user** to (a) install Qt (see §5.1) and (b) fork `Cuperino/QPrompt-Teleprompter` on GitHub, then tell us the username so we can add `origin`. **Next step: §10 Step 1, build stock QPrompt on Windows (go/no-go gate for the fork).** The user is using stock QPrompt for recording in the meantime. Gamepad support is deferred; SDL3 is prepared but off (§7).
+> **Status (2026-11-06):** Decision made: **fork QPrompt** (C++/QML, Qt 6 + KDE Kirigami, GPL-3) and add a live **talking-point checklist** to it. This folder is a git checkout of upstream QPrompt with our work on branch `intelliprompter`. The user's fork is `origin` = https://github.com/xjordanx/QPrompt-Teleprompter-Plus (branch `intelliprompter` pushed). **Waiting on the user** to install Qt (see §5.1). **Next step: §10 Step 1, build stock QPrompt on Windows (go/no-go gate for the fork).** The user is using stock QPrompt for recording in the meantime. Gamepad support is deferred; SDL3 is prepared but off (§7).
 
 A Windows teleprompter for recording the **VNA-TDR Video Series**:
 
@@ -13,7 +13,7 @@ The coverage design comes from the TypeSafe cookbook "Intelliprompter" (https://
 
 ## 1. Repo, branches and upstream
 
-- `upstream` = https://github.com/Cuperino/QPrompt-Teleprompter (default branch `main`). `origin` = the user's GitHub fork (to be added once it exists).
+- `upstream` = https://github.com/Cuperino/QPrompt-Teleprompter (default branch `main`). `origin` = the user's fork https://github.com/xjordanx/QPrompt-Teleprompter-Plus (remote URL includes `xjordanx@` so Git Credential Manager finds the stored token; the fork has only `main`, which is fine).
 - Local `main` mirrors `upstream/main`, so never commit to it. All our work goes on `intelliprompter`, and we merge `upstream/main` into it periodically.
 - **Keep the merge surface small.** Our code lives in `src/intelliprompter/` and `tests/intelliprompter/`. Edits to upstream files are minimal hooks, each marked with a `// INTELLIPROMPTER:` (or `// INTELLIPROMPTER:` in QML) comment so merges are easy to review.
 - QPrompt's bundled deps are git submodules in `3rdparty/` (Kirigami, KCoreAddons, KGlobalAccel, KCrash, ECM, breeze-icons, QHotkey, hunspell). Run `git submodule update --init` after cloning.
