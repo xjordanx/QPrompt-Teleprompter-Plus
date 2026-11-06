@@ -75,3 +75,9 @@ Makefile
 
 # Python
 **/venv/**
+
+# INTELLIPROMPTER: local-only artifacts (never commit audio, session logs, per-user settings)
+/fixtures/audio/*.wav
+/logs/
+/intelliprompter.json
+/release/

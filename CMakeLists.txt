@@ -474,6 +474,8 @@ list(APPEND DOCS ${LICENSE_FILE} ${README_FILE} ${DESCRIPTION_FILE} "COPYING.ASS
 
 set(DOC_INSTALL_DIR "share/doc/qprompt")
 
+# INTELLIPROMPTER: our modules (before src so QPrompt's targets can link them)
+add_subdirectory(src/intelliprompter)
 add_subdirectory(src)
 
 if (ANDROID)
