@@ -1,6 +1,6 @@
 # Intelliprompter (QPrompt fork): project brief for Claude Code
 
-> **Status (2026-11-06):** Decision made: **fork QPrompt** (C++/QML, Qt 6 + KDE Kirigami, GPL-3) and add a live **talking-point checklist** to it. This folder is a git checkout of upstream QPrompt with our work on branch `intelliprompter`. The user's fork is `origin` = https://github.com/xjordanx/QPrompt-Teleprompter-Plus (branch `intelliprompter` pushed). **Waiting on the user** to install Qt (see §5.1). **Next step: §10 Step 1, build stock QPrompt on Windows (go/no-go gate for the fork).** The user is using stock QPrompt for recording in the meantime. Gamepad support is deferred; SDL3 is prepared but off (§7).
+> **Status (2026-11-06):** Decision made: **fork QPrompt** (C++/QML, Qt 6 + KDE Kirigami, GPL-3) and add a live **talking-point checklist** to it. This folder is a git checkout of upstream QPrompt with our work on branch `intelliprompter`. The user's fork is `origin` = https://github.com/xjordanx/QPrompt-Teleprompter-Plus (branch `intelliprompter` pushed). Qt 6.12.0 is installed and **stock QPrompt builds and runs** via `scripts/build.ps1` (Step 1 done on our side; the user still needs to confirm it on the 7" monitor). **Next step: §10 Step 2, parser + checklist display.** The user is using stock QPrompt for recording in the meantime. Gamepad support is deferred; SDL3 is prepared but off (§7).
 
 A Windows teleprompter for recording the **VNA-TDR Video Series**:
 
@@ -76,7 +76,7 @@ Snapshot-test the parsed output of all 15 episodes (read-only source; tests skip
 
 ## 5. Architecture & stack (decided)
 
-- **Qt 6** (minimum 6.8.2 per upstream CMake; upstream `setup.sh` targets **6.12.0**), **MSVC 2022 x64**, CMake + Ninja, KF6 frameworks from the bundled submodules. The user's machine has VS 2022 Professional (C++ desktop, ATL, Windows SDK 10.0.26100), CMake and Ninja in `C:\DevTools\CMake\bin`.
+- **Qt 6** (minimum 6.8.2 per upstream CMake; upstream `setup.sh` targets **6.12.0**), **MSVC 2022 x64**, CMake + Ninja, KF6 frameworks from the bundled submodules. The user's machine has VS 2022 Professional at `C:\DevTools\Microsoft Visual Studio\2022\Professional` (C++ desktop, ATL, Windows SDK 10.0.26100; found via `vswhere`), and Qt 6.12.0 at `C:\Qt\6.12.0\msvc2022_64`, with Qt's CMake and Ninja in `C:\Qt\Tools`.
 - New Qt modules we add on top of upstream: **Qt Multimedia** (mic). Upstream already pulls in Qt WebSockets, Network, Quick, QuickControls2, Svg, ShaderTools and LinguistTools. Tests use **Qt Test** via CTest.
 - Secrets and network calls stay in C++. QML only receives state (items, covered flags, status, call counts), never keys.
 
@@ -141,7 +141,11 @@ QPrompt's own settings stay in QPrompt's storage, untouched.
 
 ## 10. Build plan
 
-1. **Build stock QPrompt on Windows (gate).** Qt per §5.1. Configure with CMake/Ninja against `C:\Qt\<ver>\msvc2022_64`, run it, `windeployqt` it, and confirm it works on the 7" monitor. Write down the exact working commands here and add `scripts/build.ps1`. If this fails badly, stop and discuss the Electron fallback with the user.
+1. **Build stock QPrompt on Windows (gate). Done 2026-11-06.** Run `pwsh scripts/build.ps1`. It configures if needed, then builds, runs `cmake --install` and `windeployqt`. Use `-Step build` for incremental builds and `-Gamepad` to enable SDL3. Output: `build\install\bin\QPrompt.exe`. Notes:
+   - **Don't use upstream `setup.sh` on Windows.** It copies ECM/QHotkey output into the Qt prefix. The root CMakeLists already builds ECM, KCoreAddons, Kirigami, QHotkey and Hunspell from the submodules, so configuring against the Qt prefix is enough.
+   - Configure warnings are benign: Vulkan headers, KF6Crash (optional) and IcoTool (exe icon only) are not found.
+   - A clean build is about 865 Ninja steps. The deployed tree is **1.9 GB**, mostly the FluentWinUI3 Controls style (428 MB) and the QML tree deployed twice (`bin\qml` and `qml`). Trim it in Step 4.
+   - The fork shares QPrompt's settings storage with any stock QPrompt install (same app/org name). Consider renaming the app identity before the user runs both side by side.
 2. **Parser + checklist display with a fake scorer.** `script/` with Qt Test snapshots of all 15 episodes. Render blocks in the prompter. A debug hotkey ticks the next leaf. Verify the anchor/edit/save behavior (§5.3).
 3. **Live coverage.** Mic + device picker, ElevenLabs adapter, Replay provider, TypeSafe client, CoverageEngine (throttle, one-way, roll-up, segment scoping, backoff), DPAPI vault + setup wizard, debug overlay with call counts. The user creates keys at this point.
 4. **Package + smoke test.** Portable zip, smoke checklist for the user, session logs to `logs/session-<ts>.json` (no keys, no audio).

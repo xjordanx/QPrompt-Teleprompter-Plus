@@ -63,6 +63,8 @@ Makefile
 # AppImage output and packaging tools
 # (build-appimage.sh is tracked; it is only here because of the **/build* rule above)
 !/dist/appimage/build-appimage.sh
+# INTELLIPROMPTER: our Windows build script (also caught by **/build*)
+!/scripts/build.ps1
 *.AppImage
 *.AppImage.zsync
 *.AppImage.part
